@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Prefinal Physics Laboratory Examination</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: #eef2f7;
+  color: #0f172a;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+}
+.card {
+  max-width: 880px;
+  margin: 20px auto;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 24px 28px;
+  box-shadow: 0 2px 8px rgba(15,23,42,0.06);
+}
+h1 {
+  color: #1e3a5f;
+  margin-top: 0;
+  border-bottom: 3px solid #1e3a5f;
+  padding-bottom: 8px;
+}
+h2 {
+  color: #1e3a5f;
+  margin-top: 0;
+}
+hr { border: none; border-top: 1px solid #cbd5e1; margin: 14px 0; }
+input[type="text"], input[type="number"] {
+  padding: 8px 12px;
+  font-size: 15px;
+  border: 2px solid #cbd5e1;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+input[type="text"]:focus, input[type="number"]:focus {
+  border-color: #2563eb;
+  background: #fffbea;
+}
+button {
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  background: #1e3a5f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+button:hover { background: #2c4c75; }
+button.secondary {
+  background: white;
+  color: #1e3a5f;
+  border: 2px solid #1e3a5f;
+}
+button.secondary:hover { background: #f1f5f9; }
+
+/* Header bar for question screen */
+.qHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e3a5f;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.qHeader .section {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.85;
+}
+.qHeader .progress {
+  font-weight: bold;
+  font-size: 18px;
+}
+.qHeader .timer {
+  background: white;
+  color: #1e3a5f;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: "SF Mono", Consolas, monospace;
+  font-weight: bold;
+  font-size: 17px;
+  min-width: 78px;
+  text-align: center;
+}
+.qHeader .timer.warn { background: #fde68a; color: #78350f; }
+.qHeader .timer.danger { background: #fecaca; color: #7f1d1d; }
+
+.scenario {
+  background: #f0f7ff;
+  border-left: 4px solid #2563eb;
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin: 10px 0 14px 0;
+  line-height: 1.5;
+}
+.question {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1e3a5f;
+  margin: 16px 0 12px 0;
+}
+.answer-row {
+  background: #f8fafc;
+  border: 2px dashed #94a3b8;
+  padding: 14px 18px;
+  border-radius: 6px;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.answer-row label {
+  font-weight: 600;
+  color: #1e3a5f;
+}
+.answer-row input[type="number"] {
+  font-size: 18px;
+  width: 160px;
+  text-align: right;
+}
+.answer-row .unit {
+  font-family: "SF Mono", Consolas, monospace;
+  font-weight: bold;
+  color: #475569;
+  font-size: 16px;
+}
+
+.svgWrap {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px;
+  margin: 10px 0;
+  text-align: center;
+}
+.svgWrap svg { max-width: 100%; height: auto; }
+
+/* Instructions list */
+.instGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+.instGrid .box {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #2563eb;
+  padding: 12px 14px;
+  border-radius: 4px;
+}
+.instGrid .box h3 {
+  margin: 0 0 6px 0;
+  color: #1e3a5f;
+  font-size: 15px;
+}
+.instGrid .box p { margin: 4px 0; font-size: 13px; color: #475569; }
+
+.keyNote {
+  background: #fef3c7;
+  border-left: 4px solid #d97706;
+  padding: 10px 14px;
+  border-radius: 4px;
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+/* Results */
+#resultsCard .score-big {
+  font-size: 48px;
+  font-weight: bold;
+  color: #1e3a5f;
+  text-align: center;
+  margin: 10px 0 0;
+}
+#resultsCard .pct {
+  font-size: 22px;
+  text-align: center;
+  color: #475569;
+  margin: 0 0 12px 0;
+}
+#resultsCard .breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 14px;
+}
+#resultsCard .breakdown-table th,
+#resultsCard .breakdown-table td {
+  border: 1px solid #cbd5e1;
+  padding: 6px 10px;
+  text-align: left;
+}
+#resultsCard .breakdown-table th {
+  background: #1e3a5f;
+  color: white;
+  font-size: 13px;
+}
+#resultsCard .breakdown-table td.num { text-align: right; font-family: "SF Mono", Consolas, monospace; }
+#resultsCard .breakdown-table tr.correct td { background: #f0fdf4; }
+#resultsCard .breakdown-table tr.wrong td { background: #fef2f2; }
+#resultsCard .section-header td {
+  background: #1e3a5f !important;
+  color: white;
+  font-weight: bold;
+  font-size: 13px;
+  text-align: center;
+  padding: 8px;
+}
+
+/* Locked / terminated screens */
+.locked {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 28px;
+  border-radius: 10px;
+  text-align: center;
+  background: white;
+  box-shadow: 0 2px 8px rgba(15,23,42,0.06);
+}
+.locked.terminated {
+  border: 3px solid #b91c1c;
+  background: #fff5f5;
+}
+.locked.terminated h1 { color: #7f1d1d; border-color: #b91c1c; }
+.locked .big-num {
+  font-size: 54px;
+  font-weight: bold;
+  color: #b91c1c;
+  margin: 10px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- NAME ENTRY -->
+<div id="nameScreen" class="card">
+  <h1>Prefinal Phys111 - Laboratory Examination</h1>
+  <p><b>Topics:</b> Pascal's Principle &nbsp;|&nbsp; Reading a Barometer &nbsp;|&nbsp; Reading a Manometer</p>
+  <div class="instGrid">
+    <div class="box">
+      <h3>Pascal's Principle</h3>
+      <p>5 problems &middot; 4 min each</p>
+    </div>
+    <div class="box">
+      <h3>Barometer</h3>
+      <p>5 problems &middot; 4 min each</p>
+    </div>
+    <div class="box">
+      <h3>Manometer</h3>
+      <p>5 problems &middot; 4 min each</p>
+    </div>
+  </div>
+  <div class="keyNote">
+    <b>Scoring per problem (out of 100):</b><br>
+    &bull; <b>80 points</b> for a correct answer (integer, &plusmn;4% tolerance accepted).<br>
+    &bull; <b>Up to 20 points speed bonus</b> &mdash; awarded only if correct, decreases linearly from 20 at 0 s to 0 at 240 s.<br>
+    &bull; Incorrect or timeout &rarr; 0 points for that problem.
+  </div>
+  <p><b>Note:</b> This exam can only be taken ONCE on this browser.</p>
+  <hr>
+  <p>Last Name: <input type="text" id="lastName"></p>
+  <p>First Name: <input type="text" id="firstName"></p>
+  <button onclick="startExam()">Begin Exam</button>
+</div>
+
+<!-- ALREADY COMPLETED -->
+<div id="lockedScreen" class="card" hidden>
+  <h1>Exam Already Completed</h1>
+  <p>This browser has already been used to complete the Prefinal examination. You cannot retake it.</p>
+  <hr>
+  <div id="lockedResults"></div>
+  <br>
+  <button onclick="takeScreenshot()">Download Results as PNG</button>
+</div>
+
+<!-- TAB SWITCH LOCKOUT -->
+<div id="tabSwitchLockScreen" class="locked terminated" hidden>
+  <h1>⚠ Examination Terminated</h1>
+  <p><b>Tab switch detected 2 times.</b></p>
+  <div class="big-num">2 / 2</div>
+  <p>You switched tabs or windows too many times during the examination. Your examination has been terminated and you cannot retake it on this browser.</p>
+  <hr>
+  <p id="tabSwitchLockName"></p>
+  <p><b>Date terminated:</b> <span id="tabSwitchLockDate"></span></p>
+</div>
+
+<!-- SECTION INSTRUCTIONS -->
+<div id="instructionsScreen" class="card" hidden>
+  <h2 id="instTitle"></h2>
+  <div id="instBody"></div>
+  <div class="keyNote" id="instNote"></div>
+  <button onclick="beginSection()">Start Section</button>
+</div>
+
+<!-- QUESTION SCREEN -->
+<div id="questionScreen" class="card" hidden>
+  <div class="qHeader">
+    <div>
+      <div class="section" id="sectionLabel"></div>
+      <div class="progress">Problem <span id="qNum"></span> of <span id="qTotal"></span></div>
+    </div>
+    <div class="timer" id="timer">240s</div>
+  </div>
+  <div class="scenario" id="qScenario"></div>
+  <div class="svgWrap" id="qSvg"></div>
+  <div class="question" id="qText"></div>
+  <div class="answer-row">
+    <label for="qAnswer">Your answer:</label>
+    <input type="number" id="qAnswer" step="1" placeholder="integer">
+    <span class="unit" id="qUnit"></span>
+  </div>
+  <button onclick="submitAnswer()">Submit Answer</button>
+  <button class="secondary" onclick="skipProblem()">Skip</button>
+</div>
+
+<!-- RESULTS -->
+<div id="resultsScreen" hidden>
+  <div id="resultsCard" class="card">
+    <h1>Examination Results</h1>
+    <p id="rName"></p>
+    <p id="rDate"></p>
+    <hr>
+    <p class="score-big"><span id="rTotal"></span> / 1500</p>
+    <p class="pct"><span id="rPct"></span>%</p>
+    <hr>
+    <div id="rBreakdown"></div>
+  </div>
+  <br>
+  <div style="text-align:center;">
+    <button onclick="takeScreenshot()">Download Results as PNG</button>
+  </div>
+</div>
+
+<script>
+// ============ CONSTANTS ============
+const TIME_PER_PROBLEM = 240;   // seconds (4 minutes)
+const TOLERANCE = 0.04;         // 4% error
+const MAX_TAB_SWITCHES = 2;
+
+// ============ PROBLEMS ============
+// Each problem: scenario text, question, given values for SVG, correct answer (integer), unit.
+
+const problems = {
+  pascal: [
+    {
+      scenario: "A hydraulic press has two pistons of different areas connected by an incompressible liquid.",
+      question: "What is the output force F₂ on the large piston?",
+      given: {F1: 20, A1: 10, F2: null, A2: 50, W: null},
+      find: "F2",
+      answer: 100, unit: "N"
+    },
+    {
+      scenario: "A hydraulic lift uses a small input piston to produce a much larger output force.",
+      question: "What is the output force F₂ on the large piston?",
+      given: {F1: 50, A1: 5, F2: null, A2: 100, W: null},
+      find: "F2",
+      answer: 1000, unit: "N"
+    },
+    {
+      scenario: "A heavy load sits on the large piston of a hydraulic lift.",
+      question: "What minimum force F₁ must be applied on the small piston to support the load?",
+      given: {F1: null, A1: 10, F2: null, A2: 200, W: 2000},
+      find: "F1",
+      answer: 100, unit: "N"
+    },
+    {
+      scenario: "A car sits on the large piston of a hydraulic lift. (Use g = 10 m/s²)",
+      question: "What force F₁ must be applied on the small piston to just support the car?",
+      given: {F1: null, A1: 10, F2: null, A2: 200, W: null, mass: 400, g: 10},
+      find: "F1",
+      answer: 200, unit: "N"
+    },
+    {
+      scenario: "A force is applied to the small piston of a hydraulic press.",
+      question: "What is the output force F₂ on the large piston?",
+      given: {F1: 40, A1: 8, F2: null, A2: 80, W: null},
+      find: "F2",
+      answer: 400, unit: "N"
+    }
+  ],
+  barometer: [
+    {
+      scenario: "A Torricelli mercury barometer shows the mercury column rising to a height h above the reservoir surface.",
+      question: "Calculate the atmospheric pressure in Pascals using P = ρgh.",
+      given: {h_cm: 75, rho: 13600, g: 10},
+      answer: 102000, unit: "Pa"
+    },
+    {
+      scenario: "A mercury barometer measures atmospheric pressure at sea level.",
+      question: "Calculate the atmospheric pressure in Pascals using P = ρgh.",
+      given: {h_cm: 76, rho: 13600, g: 10},
+      answer: 103360, unit: "Pa"
+    },
+    {
+      scenario: "A mercury barometer is being read on a rainy day.",
+      question: "Calculate the atmospheric pressure in Pascals using P = ρgh.",
+      given: {h_cm: 72, rho: 13600, g: 10},
+      answer: 97920, unit: "Pa"
+    },
+    {
+      scenario: "A mercury barometer is being read on a fair-weather day with high pressure.",
+      question: "Calculate the atmospheric pressure in Pascals using P = ρgh.",
+      given: {h_cm: 80, rho: 13600, g: 10},
+      answer: 108800, unit: "Pa"
+    },
+    {
+      scenario: "A mercury barometer is being read at a high-altitude location.",
+      question: "Calculate the atmospheric pressure in Pascals using P = ρgh.",
+      given: {h_cm: 68, rho: 13600, g: 10},
+      answer: 92480, unit: "Pa"
+    }
+  ],
+  manometer: [
+    {
+      scenario: "An open-tube mercury manometer is connected to a sealed container of gas. The mercury on the OPEN side is HIGHER than on the gas side by h.",
+      question: "What is the absolute pressure of the gas in Pascals? (P_gas = P_atm + ρgh)",
+      given: {h_cm: 20, sideHigher: "open", rho: 13600, g: 10, P_atm: 100000},
+      answer: 127200, unit: "Pa"
+    },
+    {
+      scenario: "An open-tube mercury manometer measures the pressure of a gas. The mercury on the OPEN side is HIGHER than on the gas side.",
+      question: "What is the absolute pressure of the gas in Pascals? (P_gas = P_atm + ρgh)",
+      given: {h_cm: 15, sideHigher: "open", rho: 13600, g: 10, P_atm: 100000},
+      answer: 120400, unit: "Pa"
+    },
+    {
+      scenario: "An open-tube manometer is connected to a gas at low pressure. The mercury on the GAS side is HIGHER than on the open side by h.",
+      question: "What is the absolute pressure of the gas in Pascals? (P_gas = P_atm − ρgh)",
+      given: {h_cm: 10, sideHigher: "gas", rho: 13600, g: 10, P_atm: 100000},
+      answer: 86400, unit: "Pa"
+    },
+    {
+      scenario: "An open-tube manometer reads a highly pressurized gas. The mercury on the OPEN side is much HIGHER than on the gas side.",
+      question: "What is the absolute pressure of the gas in Pascals? (P_gas = P_atm + ρgh)",
+      given: {h_cm: 25, sideHigher: "open", rho: 13600, g: 10, P_atm: 100000},
+      answer: 134000, unit: "Pa"
+    },
+    {
+      scenario: "An open-tube manometer reads a slightly-below-atmospheric gas. The mercury on the GAS side is HIGHER than on the open side.",
+      question: "What is the absolute pressure of the gas in Pascals? (P_gas = P_atm − ρgh)",
+      given: {h_cm: 5, sideHigher: "gas", rho: 13600, g: 10, P_atm: 100000},
+      answer: 93200, unit: "Pa"
+    }
+  ]
+};
+
+// ============ STATE ============
+let student = {last: "", first: ""};
+let currentSection = "";
+let currentIndex = 0;
+let timerInterval = null;
+let timeLeft = 0;
+let problemStartTime = 0;
+let answers = {pascal: [], barometer: [], manometer: []};
+
+// Tab switch detection
+let examInProgress = false;
+let tabSwitchCount = 0;
+let lastSwitchTime = 0;
+
+// ============ SVG RENDERERS ============
+
+function renderPascalSvg(prob) {
+  const g = prob.given;
+  const showF1 = g.F1 !== null ? (g.F1 + " N") : "?";
+  const showA1 = g.A1 + " cm²";
+  const showA2 = g.A2 + " cm²";
+  let showF2;
+  if (g.W !== null && g.W !== undefined) {
+    showF2 = g.W + " N (load)";
+  } else if (g.mass !== undefined) {
+    showF2 = g.mass + " kg (load)";
+  } else if (g.F2 !== null && g.F2 !== undefined) {
+    showF2 = g.F2 + " N";
+  } else {
+    showF2 = "?";
+  }
+
+  // Givens text for the panel
+  const givensLines = [];
+  if (g.F1 !== null) givensLines.push("F₁ = " + g.F1 + " N"); else givensLines.push("F₁ = ?  (find this)");
+  givensLines.push("A₁ = " + g.A1 + " cm²");
+  if (g.W !== null && g.W !== undefined) {
+    givensLines.push("Load = " + g.W + " N");
+  } else if (g.mass !== undefined) {
+    givensLines.push("Mass = " + g.mass + " kg");
+    givensLines.push("g = " + g.g + " m/s²");
+  } else if (g.F2 !== null && g.F2 !== undefined) {
+    givensLines.push("F₂ = " + g.F2 + " N");
+  } else {
+    givensLines.push("F₂ = ?  (find this)");
+  }
+  givensLines.push("A₂ = " + g.A2 + " cm²");
+
+  let givensSvg = "";
+  for (let i = 0; i < givensLines.length; i++) {
+    givensSvg += '<text x="35" y="' + (82 + i*18) + '" font-family="SF Mono, Consolas, monospace" font-size="13">' + givensLines[i] + '</text>';
+  }
+
+  return '<svg viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg" width="100%">' +
+    '<defs>' +
+      '<linearGradient id="liquidP" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#1e40af"/>' +
+      '</linearGradient>' +
+      '<linearGradient id="pistonP" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0" stop-color="#94a3b8"/><stop offset="1" stop-color="#334155"/>' +
+      '</linearGradient>' +
+    '</defs>' +
+    '<text x="360" y="28" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e3a5f">HYDRAULIC PRESS (PASCAL\'S PRINCIPLE)</text>' +
+    // Givens box
+    '<rect x="20" y="50" width="290" height="135" fill="#f8fafc" stroke="#1e3a5f" stroke-width="2" rx="6"/>' +
+    '<text x="35" y="70" font-size="13" font-weight="bold" fill="#1e3a5f">GIVEN:</text>' +
+    givensSvg +
+    // Formula box
+    '<rect x="330" y="50" width="370" height="60" fill="#fef3c7" stroke="#d97706" stroke-width="2" rx="6"/>' +
+    '<text x="515" y="78" text-anchor="middle" font-size="13" font-weight="bold" fill="#78350f">Pascal\'s Principle</text>' +
+    '<text x="515" y="100" text-anchor="middle" font-size="20" font-style="italic" font-family="serif" fill="#78350f">F₁ / A₁  =  F₂ / A₂</text>' +
+    // Force arrows
+    '<text x="220" y="210" text-anchor="middle" font-size="14" font-weight="bold" fill="#dc2626">F₁ = ' + showF1 + '</text>' +
+    '<line x1="220" y1="218" x2="220" y2="260" stroke="#dc2626" stroke-width="3"/>' +
+    '<polygon points="213,255 220,268 227,255" fill="#dc2626"/>' +
+    '<text x="550" y="210" text-anchor="middle" font-size="14" font-weight="bold" fill="#dc2626">F₂ = ' + showF2 + '</text>' +
+    '<line x1="550" y1="218" x2="550" y2="260" stroke="#dc2626" stroke-width="3"/>' +
+    '<polygon points="543,255 550,268 557,255" fill="#dc2626"/>' +
+    // Small cylinder (left)
+    '<rect x="180" y="270" width="80" height="95" fill="none" stroke="#475569" stroke-width="3"/>' +
+    '<rect x="183" y="270" width="74" height="12" fill="url(#pistonP)" stroke="#334155" stroke-width="1"/>' +
+    '<rect x="183" y="282" width="74" height="80" fill="url(#liquidP)"/>' +
+    // Large cylinder (right)
+    '<rect x="470" y="270" width="160" height="95" fill="none" stroke="#475569" stroke-width="3"/>' +
+    '<rect x="473" y="270" width="154" height="12" fill="url(#pistonP)" stroke="#334155" stroke-width="1"/>' +
+    '<rect x="473" y="282" width="154" height="80" fill="url(#liquidP)"/>' +
+    // Connecting pipe
+    '<rect x="180" y="340" width="450" height="22" fill="url(#liquidP)" stroke="#475569" stroke-width="3"/>' +
+    // Ground
+    '<rect x="150" y="365" width="500" height="10" fill="#78716c"/>' +
+    // Area labels
+    '<text x="220" y="390" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a5f">A₁ = ' + showA1 + '</text>' +
+    '<text x="550" y="390" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a5f">A₂ = ' + showA2 + '</text>' +
+  '</svg>';
+}
+
+function renderBarometerSvg(prob) {
+  const g = prob.given;
+  const h = g.h_cm;
+  const pxPerCm = 3;
+  const surfaceY = 410;          // mercury surface in reservoir
+  const tubeTopY = 60;           // top of tube (sealed, vacuum end)
+  const tubeBottomY = 445;       // tube dips into reservoir mercury
+  const dishTopY = 395;          // top rim of dish (above mercury surface)
+  const dishBottomY = 465;       // dish floor
+  const mercuryTopY = surfaceY - h * pxPerCm;
+
+  return '<svg viewBox="0 0 500 480" xmlns="http://www.w3.org/2000/svg" width="100%">' +
+    '<defs>' +
+      '<linearGradient id="mercB" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0" stop-color="#d1d5db"/><stop offset="0.4" stop-color="#6b7280"/><stop offset="1" stop-color="#374151"/>' +
+      '</linearGradient>' +
+      '<linearGradient id="vacB" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0" stop-color="#1e293b"/><stop offset="1" stop-color="#0f172a"/>' +
+      '</linearGradient>' +
+      '<linearGradient id="dishB" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0" stop-color="#e5e7eb"/><stop offset="1" stop-color="#9ca3af"/>' +
+      '</linearGradient>' +
+    '</defs>' +
+    '<text x="250" y="26" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e3a5f">MERCURY BAROMETER (Torricelli)</text>' +
+    // Givens box
+    '<rect x="20" y="45" width="180" height="100" fill="#f8fafc" stroke="#1e3a5f" stroke-width="2" rx="6"/>' +
+    '<text x="32" y="64" font-size="13" font-weight="bold" fill="#1e3a5f">GIVEN:</text>' +
+    '<text x="32" y="84" font-family="SF Mono, Consolas, monospace" font-size="12">h = ' + h + ' cm</text>' +
+    '<text x="32" y="100" font-family="SF Mono, Consolas, monospace" font-size="12">ρ = ' + g.rho + ' kg/m³</text>' +
+    '<text x="32" y="116" font-family="SF Mono, Consolas, monospace" font-size="12">g = ' + g.g + ' m/s²</text>' +
+    '<text x="32" y="136" font-size="12" font-weight="bold" fill="#dc2626">Find P = ?</text>' +
+    // Formula
+    '<rect x="300" y="45" width="180" height="60" fill="#fef3c7" stroke="#d97706" stroke-width="2" rx="6"/>' +
+    '<text x="390" y="68" text-anchor="middle" font-size="12" font-weight="bold" fill="#78350f">Pressure Formula</text>' +
+    '<text x="390" y="92" text-anchor="middle" font-size="20" font-style="italic" font-family="serif" fill="#78350f">P = ρ·g·h</text>' +
+    // Reservoir dish (outer shape)
+    '<path d="M 60 ' + dishTopY + ' L 60 ' + dishBottomY + ' Q 60 ' + (dishBottomY+8) + ' 70 ' + (dishBottomY+8) + ' L 330 ' + (dishBottomY+8) + ' Q 340 ' + (dishBottomY+8) + ' 340 ' + dishBottomY + ' L 340 ' + dishTopY + ' Z" fill="url(#dishB)" stroke="#4b5563" stroke-width="2"/>' +
+    // Mercury inside dish (fills from surfaceY down)
+    '<path d="M 64 ' + surfaceY + ' L 64 ' + (dishBottomY-4) + ' Q 64 ' + (dishBottomY+2) + ' 70 ' + (dishBottomY+2) + ' L 330 ' + (dishBottomY+2) + ' Q 336 ' + (dishBottomY+2) + ' 336 ' + (dishBottomY-4) + ' L 336 ' + surfaceY + ' Z" fill="url(#mercB)"/>' +
+    // Mercury surface line
+    '<line x1="64" y1="' + surfaceY + '" x2="336" y2="' + surfaceY + '" stroke="#111" stroke-width="1"/>' +
+    '<text x="90" y="' + (surfaceY - 3) + '" font-size="10" fill="#111" font-style="italic">mercury surface</text>' +
+    // Atmospheric pressure arrows (pressing down on open reservoir)
+    '<text x="250" y="382" text-anchor="middle" font-size="12" font-weight="bold" fill="#0369a1">P_atm ↓  (atmospheric pressure)</text>' +
+    '<line x1="100" y1="388" x2="100" y2="404" stroke="#0369a1" stroke-width="2"/>' +
+    '<polygon points="95,400 100,408 105,400" fill="#0369a1"/>' +
+    '<line x1="285" y1="388" x2="285" y2="404" stroke="#0369a1" stroke-width="2"/>' +
+    '<polygon points="280,400 285,408 290,400" fill="#0369a1"/>' +
+    // Tube (glass walls)
+    '<rect x="180" y="' + tubeTopY + '" width="40" height="' + (tubeBottomY - tubeTopY) + '" fill="#e5e7eb" stroke="#4b5563" stroke-width="2"/>' +
+    // Vacuum at top of tube
+    '<rect x="184" y="' + tubeTopY + '" width="32" height="' + (mercuryTopY - tubeTopY) + '" fill="url(#vacB)"/>' +
+    '<text x="200" y="' + (tubeTopY + (mercuryTopY - tubeTopY)/2 + 4) + '" text-anchor="middle" font-size="11" font-weight="bold" fill="white">VACUUM</text>' +
+    // Mercury in tube
+    '<rect x="184" y="' + mercuryTopY + '" width="32" height="' + (tubeBottomY - mercuryTopY) + '" fill="url(#mercB)"/>' +
+    // Scale ticks on right side of tube
+    renderBarometerScale(surfaceY, pxPerCm) +
+    // Height dimension arrow (h)
+    '<line x1="260" y1="' + mercuryTopY + '" x2="260" y2="' + surfaceY + '" stroke="#dc2626" stroke-width="2"/>' +
+    '<polygon points="255,' + (mercuryTopY+8) + ' 260,' + mercuryTopY + ' 265,' + (mercuryTopY+8) + '" fill="#dc2626"/>' +
+    '<polygon points="255,' + (surfaceY-8) + ' 260,' + surfaceY + ' 265,' + (surfaceY-8) + '" fill="#dc2626"/>' +
+    '<text x="275" y="' + ((mercuryTopY + surfaceY)/2 + 4) + '" font-size="14" font-weight="bold" fill="#dc2626">h = ' + h + ' cm</text>' +
+  '</svg>';
+}
+
+function renderBarometerScale(surfaceY, pxPerCm) {
+  let s = "";
+  for (let cm = 0; cm <= 90; cm += 10) {
+    const y = surfaceY - cm * pxPerCm;
+    if (y < 60 || y > surfaceY + 10) continue;
+    s += '<line x1="220" y1="' + y + '" x2="232" y2="' + y + '" stroke="#475569" stroke-width="1.5"/>';
+    s += '<text x="238" y="' + (y+4) + '" font-size="10" fill="#475569">' + cm + '</text>';
+  }
+  return s;
+}
+
+function renderManometerSvg(prob) {
+  const g = prob.given;
+  const h = g.h_cm;
+  const sideHigher = g.sideHigher; // "open" or "gas"
+  const pxPerCm = 2.5;
+  const hPx = h * pxPerCm;
+  const baseY = 260; // equal-mercury level
+  let leftLevel, rightLevel;
+  if (sideHigher === "open") {
+    rightLevel = baseY - hPx/2;
+    leftLevel  = baseY + hPx/2;
+  } else {
+    leftLevel  = baseY - hPx/2;
+    rightLevel = baseY + hPx/2;
+  }
+
+  // Tube centerlines
+  // Left tube x=150, right tube x=450, bottom curve around y=370
+  const tubePath = "M 150 120 L 150 350 Q 150 380 180 380 L 420 380 Q 450 380 450 350 L 450 60";
+  const mercuryPath = "M 150 " + leftLevel + " L 150 350 Q 150 378 180 378 L 420 378 Q 450 378 450 350 L 450 " + rightLevel;
+
+  const higherText = sideHigher === "open"
+    ? "Mercury on the OPEN side is HIGHER by h → P_gas > P_atm"
+    : "Mercury on the GAS side is HIGHER by h → P_gas < P_atm";
+
+  return '<svg viewBox="0 0 620 460" xmlns="http://www.w3.org/2000/svg" width="100%">' +
+    '<defs>' +
+      '<linearGradient id="mercM" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0" stop-color="#d1d5db"/><stop offset="0.4" stop-color="#6b7280"/><stop offset="1" stop-color="#374151"/>' +
+      '</linearGradient>' +
+      '<linearGradient id="gasM" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0" stop-color="#fde68a"/><stop offset="1" stop-color="#f59e0b"/>' +
+      '</linearGradient>' +
+    '</defs>' +
+    '<text x="310" y="26" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e3a5f">OPEN-TUBE MANOMETER</text>' +
+    // Givens box
+    '<rect x="20" y="45" width="200" height="135" fill="#f8fafc" stroke="#1e3a5f" stroke-width="2" rx="6"/>' +
+    '<text x="32" y="64" font-size="13" font-weight="bold" fill="#1e3a5f">GIVEN:</text>' +
+    '<text x="32" y="84" font-family="SF Mono, Consolas, monospace" font-size="12">h = ' + h + ' cm</text>' +
+    '<text x="32" y="100" font-family="SF Mono, Consolas, monospace" font-size="12">ρ = ' + g.rho + ' kg/m³</text>' +
+    '<text x="32" y="116" font-family="SF Mono, Consolas, monospace" font-size="12">g = ' + g.g + ' m/s²</text>' +
+    '<text x="32" y="132" font-family="SF Mono, Consolas, monospace" font-size="12">P_atm = ' + g.P_atm + ' Pa</text>' +
+    '<text x="32" y="152" font-size="11" font-weight="bold" fill="#334155">' + (sideHigher === "open" ? "OPEN side higher" : "GAS side higher") + '</text>' +
+    '<text x="32" y="170" font-size="12" font-weight="bold" fill="#dc2626">Find P_gas = ?</text>' +
+    // Formula box
+    '<rect x="240" y="45" width="360" height="60" fill="#fef3c7" stroke="#d97706" stroke-width="2" rx="6"/>' +
+    '<text x="420" y="65" text-anchor="middle" font-size="12" font-weight="bold" fill="#78350f">Manometer Equation</text>' +
+    '<text x="420" y="90" text-anchor="middle" font-size="18" font-style="italic" font-family="serif" fill="#78350f">P_gas = P_atm ' + (sideHigher === "open" ? "+" : "−") + ' ρ·g·h</text>' +
+    // Gas container
+    '<rect x="80" y="70" width="140" height="45" fill="url(#gasM)" stroke="#78350f" stroke-width="2" rx="4"/>' +
+    '<text x="150" y="98" text-anchor="middle" font-size="14" font-weight="bold" fill="#78350f">GAS</text>' +
+    // Connector pipe from gas to tube
+    '<rect x="140" y="115" width="20" height="8" fill="#78350f"/>' +
+    // Atmosphere indicator at top of right tube
+    '<text x="450" y="40" text-anchor="middle" font-size="12" font-weight="bold" fill="#0369a1">P_atm (open)</text>' +
+    '<line x1="435" y1="42" x2="465" y2="42" stroke="#0369a1" stroke-width="1.5"/>' +
+    '<line x1="445" y1="46" x2="455" y2="46" stroke="#0369a1" stroke-width="1.5" opacity="0.5"/>' +
+    // Tube — glass walls (outer dark stroke)
+    '<path d="' + tubePath + '" stroke="#0f172a" stroke-width="28" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+    // Tube interior (light background = empty air/gas inside tube)
+    '<path d="' + tubePath + '" stroke="#f1f5f9" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+    // Mercury inside the tube
+    '<path d="' + mercuryPath + '" stroke="url(#mercM)" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+    // Mercury level lines (dashed, across full width, at each level)
+    '<line x1="150" y1="' + leftLevel + '" x2="500" y2="' + leftLevel + '" stroke="#dc2626" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>' +
+    '<line x1="150" y1="' + rightLevel + '" x2="530" y2="' + rightLevel + '" stroke="#dc2626" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>' +
+    // Height difference bracket on the far right
+    '<line x1="540" y1="' + Math.min(leftLevel, rightLevel) + '" x2="540" y2="' + Math.max(leftLevel, rightLevel) + '" stroke="#dc2626" stroke-width="2"/>' +
+    '<line x1="535" y1="' + Math.min(leftLevel, rightLevel) + '" x2="545" y2="' + Math.min(leftLevel, rightLevel) + '" stroke="#dc2626" stroke-width="2"/>' +
+    '<line x1="535" y1="' + Math.max(leftLevel, rightLevel) + '" x2="545" y2="' + Math.max(leftLevel, rightLevel) + '" stroke="#dc2626" stroke-width="2"/>' +
+    '<text x="550" y="' + ((leftLevel + rightLevel)/2 + 5) + '" font-size="14" font-weight="bold" fill="#dc2626">h = ' + h + ' cm</text>' +
+    // Caption
+    '<text x="310" y="430" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e3a5f">' + higherText + '</text>' +
+  '</svg>';
+}
+
+function renderProblemSvg(prob) {
+  if (currentSection === "pascal")    return renderPascalSvg(prob);
+  if (currentSection === "barometer") return renderBarometerSvg(prob);
+  if (currentSection === "manometer") return renderManometerSvg(prob);
+  return "";
+}
+
+// ============ FLOW ============
+
+function startExam() {
+  const last = document.getElementById("lastName").value.trim();
+  const first = document.getElementById("firstName").value.trim();
+  if (!last || !first) { alert("Please enter both last and first name."); return; }
+  student.last = last;
+  student.first = first;
+  localStorage.setItem("prefinalStudentName", last + ", " + first);
+  tabSwitchCount = parseInt(localStorage.getItem("prefinalTabSwitches") || "0");
+  examInProgress = true;
+  document.getElementById("nameScreen").hidden = true;
+  showInstructions("pascal");
+}
+
+function showInstructions(section) {
+  currentSection = section;
+  const title = document.getElementById("instTitle");
+  const body = document.getElementById("instBody");
+  const note = document.getElementById("instNote");
+  if (section === "pascal") {
+    title.textContent = "Section 1 — Pascal's Principle";
+    body.innerHTML = "<p>You will solve 5 problems involving hydraulic presses. Each diagram shows the piston areas and forces; apply Pascal's Principle:</p><p style='text-align:center; font-size:20px; font-style:italic;'>F₁ / A₁ = F₂ / A₂</p><p>Enter your answer as an integer in the indicated unit. A ±4% tolerance is allowed.</p>";
+  } else if (section === "barometer") {
+    title.textContent = "Section 2 — Reading a Barometer";
+    body.innerHTML = "<p>You will read 5 mercury barometer diagrams and compute the atmospheric pressure in Pascals using:</p><p style='text-align:center; font-size:20px; font-style:italic;'>P = ρ·g·h</p><p>Remember to convert h from cm to meters before multiplying. Enter an integer in Pa; ±4% tolerance is allowed.</p>";
+  } else if (section === "manometer") {
+    title.textContent = "Section 3 — Reading a Manometer";
+    body.innerHTML = "<p>You will read 5 open-tube mercury manometer diagrams and compute the gas pressure in Pascals using:</p><p style='text-align:center; font-size:20px; font-style:italic;'>P_gas = P_atm ± ρ·g·h</p><p>Add ρgh when the open side is higher (gas is above atmospheric); subtract when the gas side is higher (gas is below atmospheric). Enter an integer in Pa; ±4% tolerance is allowed.</p>";
+  }
+  note.innerHTML = "<b>Time limit:</b> 4 minutes per problem. <b>Scoring:</b> 80 pts correct + up to 20 pts speed bonus (0 at timeout). Timeout or wrong answer = 0 pts.";
+  document.getElementById("instructionsScreen").hidden = false;
+}
+
+function beginSection() {
+  document.getElementById("instructionsScreen").hidden = true;
+  currentIndex = 0;
+  showProblem();
+}
+
+function showProblem() {
+  const pool = problems[currentSection];
+  if (currentIndex >= pool.length) {
+    if (currentSection === "pascal")      { showInstructions("barometer"); return; }
+    if (currentSection === "barometer")   { showInstructions("manometer"); return; }
+    if (currentSection === "manometer")   { finishExam(); return; }
+  }
+  const prob = pool[currentIndex];
+  const sectionLabels = {pascal: "Pascal's Principle", barometer: "Barometer", manometer: "Manometer"};
+  document.getElementById("sectionLabel").textContent = sectionLabels[currentSection];
+  document.getElementById("qNum").textContent = (currentIndex + 1).toString();
+  document.getElementById("qTotal").textContent = pool.length.toString();
+  document.getElementById("qScenario").innerHTML = prob.scenario;
+  document.getElementById("qSvg").innerHTML = renderProblemSvg(prob);
+  document.getElementById("qText").innerHTML = prob.question;
+  document.getElementById("qUnit").textContent = prob.unit;
+  const input = document.getElementById("qAnswer");
+  input.value = "";
+  timeLeft = TIME_PER_PROBLEM;
+  problemStartTime = Date.now();
+  updateTimer();
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(tickTimer, 1000);
+  document.getElementById("questionScreen").hidden = false;
+  setTimeout(function() { input.focus(); }, 50);
+}
+
+function updateTimer() {
+  const el = document.getElementById("timer");
+  el.textContent = timeLeft + "s";
+  el.classList.remove("warn", "danger");
+  if (timeLeft <= 30) el.classList.add("danger");
+  else if (timeLeft <= 60) el.classList.add("warn");
+}
+
+function tickTimer() {
+  timeLeft--;
+  updateTimer();
+  if (timeLeft <= 0) {
+    clearInterval(timerInterval);
+    recordAnswer(null, TIME_PER_PROBLEM);
+    currentIndex++;
+    document.getElementById("questionScreen").hidden = true;
+    showProblem();
+  }
+}
+
+function submitAnswer() {
+  const input = document.getElementById("qAnswer");
+  const raw = input.value.trim();
+  if (raw === "") { alert("Please enter an integer answer, or click Skip."); return; }
+  const val = parseInt(raw, 10);
+  if (isNaN(val)) { alert("Please enter a valid integer."); return; }
+  clearInterval(timerInterval);
+  const used = Math.round((Date.now() - problemStartTime) / 1000);
+  recordAnswer(val, used);
+  currentIndex++;
+  document.getElementById("questionScreen").hidden = true;
+  showProblem();
+}
+
+function skipProblem() {
+  clearInterval(timerInterval);
+  const used = Math.round((Date.now() - problemStartTime) / 1000);
+  recordAnswer(null, used);
+  currentIndex++;
+  document.getElementById("questionScreen").hidden = true;
+  showProblem();
+}
+
+function recordAnswer(userValue, timeUsed) {
+  const pool = problems[currentSection];
+  const prob = pool[currentIndex];
+  const correctAnswer = prob.answer;
+  let isCorrect = false;
+  if (userValue !== null && !isNaN(userValue)) {
+    const diff = Math.abs(userValue - correctAnswer);
+    if (diff / Math.abs(correctAnswer) <= TOLERANCE) isCorrect = true;
+  }
+  const clampedTime = Math.min(timeUsed, TIME_PER_PROBLEM);
+  let correctPts = 0, speedPts = 0;
+  if (isCorrect) {
+    correctPts = 80;
+    speedPts = Math.round(20 * (TIME_PER_PROBLEM - clampedTime) / TIME_PER_PROBLEM);
+    if (speedPts < 0) speedPts = 0;
+  }
+  const totalPts = correctPts + speedPts;
+  answers[currentSection].push({
+    userValue: userValue,
+    correctAnswer: correctAnswer,
+    unit: prob.unit,
+    isCorrect: isCorrect,
+    timeUsed: clampedTime,
+    correctPts: correctPts,
+    speedPts: speedPts,
+    totalPts: totalPts
+  });
+}
+
+// ============ RESULTS ============
+
+function finishExam() {
+  document.getElementById("questionScreen").hidden = true;
+  examInProgress = false;
+
+  const sections = ["pascal", "barometer", "manometer"];
+  const sectionNames = {pascal: "Pascal's Principle", barometer: "Barometer", manometer: "Manometer"};
+  let grandTotal = 0;
+  let html = '<table class="breakdown-table"><thead><tr><th>#</th><th>Your Answer</th><th>Correct</th><th>Time</th><th>Correct pts</th><th>Speed pts</th><th>Total</th></tr></thead><tbody>';
+  for (let s = 0; s < sections.length; s++) {
+    const sec = sections[s];
+    html += '<tr class="section-header"><td colspan="7">' + sectionNames[sec] + '</td></tr>';
+    let secTotal = 0;
+    for (let i = 0; i < answers[sec].length; i++) {
+      const a = answers[sec][i];
+      secTotal += a.totalPts;
+      grandTotal += a.totalPts;
+      const userDisplay = (a.userValue === null || isNaN(a.userValue)) ? "(skipped/timeout)" : (a.userValue + " " + a.unit);
+      html += '<tr class="' + (a.isCorrect ? "correct" : "wrong") + '">' +
+        '<td>' + (i+1) + '</td>' +
+        '<td>' + userDisplay + '</td>' +
+        '<td class="num">' + a.correctAnswer + ' ' + a.unit + '</td>' +
+        '<td class="num">' + a.timeUsed + 's</td>' +
+        '<td class="num">' + a.correctPts + ' / 80</td>' +
+        '<td class="num">' + a.speedPts + ' / 20</td>' +
+        '<td class="num"><b>' + a.totalPts + ' / 100</b></td>' +
+        '</tr>';
+    }
+    html += '<tr><td colspan="6" style="text-align:right;"><b>' + sectionNames[sec] + ' subtotal:</b></td><td class="num"><b>' + secTotal + ' / 500</b></td></tr>';
+  }
+  html += '</tbody></table>';
+
+  const pct = (grandTotal / 1500 * 100).toFixed(1);
+  document.getElementById("rName").innerHTML = "<b>Student:</b> " + student.last + ", " + student.first;
+  document.getElementById("rDate").innerHTML = "<b>Date:</b> " + new Date().toLocaleString();
+  document.getElementById("rTotal").textContent = grandTotal.toString();
+  document.getElementById("rPct").textContent = pct;
+  document.getElementById("rBreakdown").innerHTML = html;
+
+  const record = {
+    name: student.last + ", " + student.first,
+    date: new Date().toISOString(),
+    pascal:    answers.pascal.reduce(function(s,a){return s + a.totalPts;}, 0),
+    barometer: answers.barometer.reduce(function(s,a){return s + a.totalPts;}, 0),
+    manometer: answers.manometer.reduce(function(s,a){return s + a.totalPts;}, 0),
+    total: grandTotal,
+    percent: pct
+  };
+  localStorage.setItem("prefinalLastResult", JSON.stringify(record));
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem("prefinalHistory") || "[]"); } catch(e) { history = []; }
+  history.push(record);
+  localStorage.setItem("prefinalHistory", JSON.stringify(history));
+  localStorage.setItem("prefinalCompleted", "true");
+  localStorage.removeItem("prefinalTabSwitches");
+  document.getElementById("resultsScreen").hidden = false;
+}
+
+function takeScreenshot() {
+  const card = document.getElementById("resultsCard") || document.getElementById("lockedResults");
+  html2canvas(card, {backgroundColor: "#ffffff"}).then(function(canvas) {
+    const link = document.createElement("a");
+    const nameSource = student.last + "_" + student.first;
+    const safeName = nameSource.replace(/[^a-zA-Z0-9_]/g, "") || "exam";
+    link.download = "prefinal_results_" + safeName + ".png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }).catch(function(err) {
+    alert("Screenshot failed: " + err + ". You can manually screenshot the results.");
+  });
+}
+
+// ============ TAB / WINDOW SWITCH DETECTION ============
+
+function handleTabSwitch() {
+  if (!examInProgress) return;
+  const now = Date.now();
+  if (now - lastSwitchTime < 800) return;
+  lastSwitchTime = now;
+
+  tabSwitchCount++;
+  localStorage.setItem("prefinalTabSwitches", tabSwitchCount.toString());
+
+  if (tabSwitchCount >= MAX_TAB_SWITCHES) {
+    lockoutForTabSwitches();
+    return;
+  }
+  // Silent — no warning shown to the student so the lockout comes as a surprise.
+}
+
+function lockoutForTabSwitches() {
+  examInProgress = false;
+  if (timerInterval) clearInterval(timerInterval);
+
+  const record = {
+    name: (student.last || "") + ", " + (student.first || ""),
+    date: new Date().toISOString(),
+    pascal: answers.pascal.reduce(function(s,a){return s + a.totalPts;}, 0),
+    barometer: answers.barometer.reduce(function(s,a){return s + a.totalPts;}, 0),
+    manometer: answers.manometer.reduce(function(s,a){return s + a.totalPts;}, 0),
+    total: 0,
+    percent: "0.0",
+    terminated: true,
+    reason: "tab_switch"
+  };
+  try { localStorage.setItem("prefinalLastResult", JSON.stringify(record)); } catch(e) {}
+  localStorage.setItem("prefinalCompleted", "true");
+  localStorage.setItem("prefinalTerminatedBySwitch", "true");
+
+  const ids = ["nameScreen", "lockedScreen", "instructionsScreen", "questionScreen", "resultsScreen"];
+  for (let i = 0; i < ids.length; i++) {
+    const el = document.getElementById(ids[i]);
+    if (el) el.hidden = true;
+  }
+  document.getElementById("tabSwitchLockName").innerHTML =
+    "<b>Student:</b> " + (record.name.replace(/^,\s*|\s*,\s*$/g,"") || "(unknown)");
+  document.getElementById("tabSwitchLockDate").textContent = new Date().toLocaleString();
+  document.getElementById("tabSwitchLockScreen").hidden = false;
+}
+
+document.addEventListener("visibilitychange", function() {
+  if (document.hidden) handleTabSwitch();
+});
+window.addEventListener("blur", function() {
+  if (document.hidden) handleTabSwitch();
+});
+
+// ============ LOCKOUT CHECK ON PAGE LOAD ============
+
+function checkLockout() {
+  if (localStorage.getItem("prefinalTerminatedBySwitch") === "true") {
+    document.getElementById("nameScreen").hidden = true;
+    let record = null;
+    try { record = JSON.parse(localStorage.getItem("prefinalLastResult") || "null"); } catch(e) { record = null; }
+    const name = record && record.name ? record.name.replace(/^,\s*|\s*,\s*$/g,"") : "(unknown)";
+    const date = record && record.date ? new Date(record.date).toLocaleString() : "(unknown)";
+    document.getElementById("tabSwitchLockName").innerHTML = "<b>Student:</b> " + name;
+    document.getElementById("tabSwitchLockDate").textContent = date;
+    document.getElementById("tabSwitchLockScreen").hidden = false;
+    return;
+  }
+  if (localStorage.getItem("prefinalCompleted") === "true") {
+    document.getElementById("nameScreen").hidden = true;
+    const lockedDiv = document.getElementById("lockedResults");
+    let record = null;
+    try { record = JSON.parse(localStorage.getItem("prefinalLastResult") || "null"); } catch(e) { record = null; }
+    if (record) {
+      const parts = (record.name || "").split(",");
+      student.last = (parts[0] || "").trim();
+      student.first = (parts[1] || "").trim();
+      lockedDiv.innerHTML =
+        "<div id='resultsCard'>" +
+        "<h2>Your Recorded Result</h2>" +
+        "<p><b>Student:</b> " + record.name + "</p>" +
+        "<p><b>Date taken:</b> " + new Date(record.date).toLocaleString() + "</p>" +
+        "<hr>" +
+        "<p><b>Pascal's Principle:</b> " + record.pascal + " / 500</p>" +
+        "<p><b>Barometer:</b> " + record.barometer + " / 500</p>" +
+        "<p><b>Manometer:</b> " + record.manometer + " / 500</p>" +
+        "<hr>" +
+        "<p><b>Total Score:</b> " + record.total + " / 1500</p>" +
+        "<p><b>Percentage:</b> " + record.percent + "%</p>" +
+        "</div>";
+    } else {
+      lockedDiv.innerHTML = "<p>A completed attempt is recorded on this browser, but the result details could not be retrieved.</p>";
+    }
+    document.getElementById("lockedScreen").hidden = false;
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", checkLockout);
+} else {
+  checkLockout();
+}
+</script>
+
+</body>
+</html>

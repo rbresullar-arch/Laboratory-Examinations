@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Midterm Physics Examination - Laboratory</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+/* Styles scoped to the see-saw section only. Rest of the exam stays plain. */
+#seesawScreen {
+  font-family: Arial, Helvetica, sans-serif;
+  max-width: 760px;
+  margin: 10px auto;
+  padding: 15px;
+  border: 2px solid black;
+  border-radius: 8px;
+}
+#seesawScreen #sText {
+  background: #f4f4f4;
+  padding: 10px;
+  border-left: 4px solid black;
+  font-size: 15px;
+}
+#seesawSvg {
+  margin: 12px 0;
+  text-align: center;
+}
+#seesawSvg svg {
+  border: 2px solid black;
+  border-radius: 6px;
+  background: linear-gradient(to bottom, #e8f4ff 0%, #e8f4ff 85%, #d4b896 85%, #d4b896 100%);
+  display: block;
+  margin: 0 auto;
+}
+#seesawScreen input[type="number"] {
+  width: 70px;
+  padding: 5px 8px;
+  font-size: 15px;
+  border: 2px solid black;
+  border-radius: 4px;
+  text-align: center;
+  margin: 0 6px;
+}
+#seesawScreen input[type="number"]:focus {
+  outline: none;
+  border-color: #0066cc;
+  background: #fffbe6;
+}
+#seesawScreen button {
+  padding: 8px 18px;
+  font-size: 15px;
+  font-weight: bold;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#seesawScreen button:hover {
+  background: #333;
+}
+#seesawScreen #sFeedback {
+  margin-top: 10px;
+  padding: 8px 12px;
+  min-height: 20px;
+  font-size: 15px;
+  border-radius: 4px;
+}
+#seesawScreen #sFeedback.ok {
+  background: #d4f4d4;
+  border: 2px solid #2a7a2a;
+  color: #1a5a1a;
+}
+#seesawScreen #sFeedback.bad {
+  background: #ffe8e8;
+  border: 2px solid #a04040;
+  color: #702020;
+}
+#seesawScreen #sFeedback.warn {
+  background: #fff4d4;
+  border: 2px solid #a07a20;
+  color: #705010;
+}
+#seesawScreen .torque-line {
+  background: #f8f8f8;
+  padding: 8px 10px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 14px;
+}
+#seesawScreen .input-row {
+  background: #fafafa;
+  padding: 10px;
+  border: 1px dashed #999;
+  border-radius: 4px;
+  margin: 8px 0;
+}
+#seesawScreen input[type="number"]:disabled {
+  background: #e8e8e8;
+  color: #666;
+  border-color: #bbb;
+  cursor: not-allowed;
+}
+#seesawScreen .locked-tag {
+  display: inline-block;
+  background: #666;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+#seesawScreen .solve-tag {
+  display: inline-block;
+  background: #0066cc;
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+#tabSwitchLockScreen {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 20px;
+  border: 3px solid #a04040;
+  border-radius: 8px;
+  background: #fff0f0;
+  text-align: center;
+}
+#tabSwitchLockScreen h1 {
+  color: #702020;
+}
+#tabSwitchLockScreen .big-num {
+  font-size: 48px;
+  font-weight: bold;
+  color: #a04040;
+  margin: 10px 0;
+}
+</style>
+</head>
+<body>
+
+<div id="nameScreen">
+  <h1>Midterm Phys111 - Laboratory Examination</h1>
+  <p>Topics covered: Centripetal Force, Torque, Equilibrium of Rigid Bodies, Work, Energy, Power</p>
+  <p>Sections: Understanding (10 items, 30s each) | Problem Solving (12 items, 3 min each) | See-Saw Challenge (5 situations, 2 min each, graded by time)</p>
+  <hr>
+  <p><b>Important:</b> This exam can only be taken ONCE. Make sure you are ready before starting.</p>
+  <p>Please enter your name:</p>
+  <p>Last Name: <input type="text" id="lastName"></p>
+  <p>First Name: <input type="text" id="firstName"></p>
+  <button onclick="startExam()">Begin Exam</button>
+</div>
+
+<div id="lockedScreen" hidden>
+  <h1>Exam Already Completed</h1>
+  <p>This has already been used to complete the examination. You cannot retake it.</p>
+  <hr>
+  <div id="lockedResults"></div>
+  <br>
+  <button onclick="takeScreenshot()">Download Results as PNG</button>
+</div>
+
+<div id="tabSwitchLockScreen" hidden>
+  <h1>⚠ Examination Terminated</h1>
+  <p><b>Tab switch detected 2 times.</b></p>
+  <div class="big-num">2 / 2</div>
+  <p>You switched tabs or windows too many times during the examination. As a result, your examination has been terminated and you cannot retake it.</p>
+  <hr>
+  <p id="tabSwitchLockName"></p>
+  <p><b>Date terminated:</b> <span id="tabSwitchLockDate"></span></p>
+</div>
+
+<div id="instructionsScreen" hidden>
+  <h2 id="instTitle"></h2>
+  <div id="instBody"></div>
+  <button onclick="beginSection()">Start Section</button>
+</div>
+
+<div id="questionScreen" hidden>
+  <p><b>Section:</b> <span id="sectionLabel"></span> | <b>Question</b> <span id="qNum"></span> of <span id="qTotal"></span> | <b>Time left:</b> <span id="timer"></span>s</p>
+  <hr>
+  <p id="qText"></p>
+  <div id="qOptions"></div>
+  <br>
+  <button onclick="submitAnswer()">Submit Answer</button>
+  <button onclick="skipQuestion()">Skip</button>
+</div>
+
+<div id="seesawScreen" hidden>
+  <p><b>See-Saw Situation</b> <span id="sNum"></span> of 5 | <b>Time left:</b> <span id="sTimer"></span>s | <b>Max points:</b> <span id="sPoints"></span></p>
+  <hr>
+  <p id="sText"></p>
+  <div id="seesawSvg"></div>
+  <div class="input-row">
+    <b>YOUR SIDE</b> &mdash; Mass (kg): <input type="number" id="sMass" min="1" step="1" value="10" oninput="updateSeesaw()"><span id="sMassTag"></span> &nbsp; Length from pivot (cm): <input type="number" id="sLength" min="1" step="1" value="10" oninput="updateSeesaw()"><span id="sLengthTag"></span>
+  </div>
+  <p class="torque-line">Fixed torque: <b><span id="leftT">0</span></b> kg·cm &nbsp;|&nbsp; Your torque: <b><span id="rightT">0</span></b> kg·cm &nbsp;|&nbsp; Difference: <b><span id="diffT">0</span></b> kg·cm</p>
+  <button onclick="checkSeesaw()">Check Balance</button>
+  <p id="sFeedback"></p>
+</div>
+
+<div id="resultsScreen" hidden>
+  <div id="resultsCard">
+    <h1>Examination Results</h1>
+    <p id="rName"></p>
+    <p id="rDate"></p>
+    <hr>
+    <p><b>Understanding:</b> <span id="rUnd"></span> / 10</p>
+    <p><b>Problem Solving:</b> <span id="rPS"></span> / 12</p>
+    <p><b>See-Saw Challenge:</b> <span id="rSS"></span> / 50</p>
+    <hr>
+    <p><b>Total Score:</b> <span id="rTotal"></span> / 72</p>
+    <p><b>Percentage:</b> <span id="rPct"></span>%</p>
+    <hr>
+    <p id="rBreakdown"></p>
+  </div>
+  <br>
+  <button onclick="takeScreenshot()">Download Results as PNG</button>
+</div>
+
+<script>
+// ============ DATA ============
+
+const understandingQuestions = [
+  {q: "Centripetal force on an object moving in a circle always points:", o: ["Tangent to the circle", "Away from the center", "Toward the center of the circle", "In the direction of motion"], a: 2},
+  {q: "Torque is best described as:", o: ["A pushing force", "The rotational effect of a force", "The same as angular velocity", "Energy in rotation"], a: 1},
+  {q: "For a rigid body in static equilibrium, the net force and net torque must both be:", o: ["Maximum", "Increasing", "Zero", "Negative"], a: 2},
+  {q: "Work is done on an object when:", o: ["Any force acts on it", "It is merely in motion", "A force causes displacement along its direction", "It accelerates without displacement"], a: 2},
+  {q: "The SI unit of energy is the:", o: ["Newton", "Watt", "Joule", "Pascal"], a: 2},
+  {q: "Power is defined as:", o: ["Force per unit time", "Work done per unit time", "Energy per unit mass", "Distance per unit time"], a: 1},
+  {q: "Which of the following INCREASES the centripetal force needed for a car going around a curve?", o: ["Increasing the radius of the curve", "Decreasing the car's speed", "Increasing the car's speed", "Decreasing the car's mass"], a: 2},
+  {q: "For the same applied force, a longer lever arm produces:", o: ["A smaller torque", "A larger torque", "No change in torque", "A negative torque"], a: 1},
+  {q: "Kinetic energy of a moving object depends on:", o: ["Mass only", "Velocity only", "Both mass and velocity", "Height above the ground"], a: 2},
+  {q: "An appliance's wattage rating tells you its:", o: ["Total energy used in a day", "Rate of using electrical energy", "Voltage requirement", "Electrical resistance"], a: 1}
+];
+
+const problemSolvingQuestions = [
+  // TORQUE
+  {q: "A 10 N force is applied perpendicular to a wrench at 0.5 m from the pivot. What is the torque?", o: ["2 N·m", "5 N·m", "10 N·m", "20 N·m"], a: 1},
+  {q: "What perpendicular force applied at 0.25 m from the axis produces a torque of 10 N·m?", o: ["2.5 N", "25 N", "40 N", "100 N"], a: 2},
+  {q: "A door handle is 0.8 m from the hinges. A 15 N perpendicular push produces what torque?", o: ["9.6 N·m", "12 N·m", "18.75 N·m", "0.053 N·m"], a: 1},
+  {q: "A 20 N force acts perpendicular to a lever 30 cm from the pivot. What is the torque in N·m?", o: ["0.6 N·m", "6 N·m", "60 N·m", "600 N·m"], a: 1},
+  // EQUILIBRIUM
+  {q: "On a see-saw, a 30 kg child sits 2.0 m from the pivot. How far from the pivot must a 40 kg child sit on the other side to balance it?", o: ["1.0 m", "1.5 m", "2.0 m", "2.5 m"], a: 1},
+  {q: "A 5 N weight hangs 0.4 m from the pivot of a lever. What force on the other side, 1.0 m from the pivot, will balance it?", o: ["1 N", "2 N", "5 N", "12.5 N"], a: 1},
+  {q: "A uniform plank rests on a pivot at its center. A 15 N weight is placed 1.0 m to the left of the pivot. What weight placed 1.5 m to the right of the pivot balances it?", o: ["5 N", "10 N", "15 N", "22.5 N"], a: 1},
+  {q: "A meter stick is pivoted at the 50 cm mark. A 6 N force pulls down at the 20 cm mark. What downward force at the 90 cm mark balances it?", o: ["3 N", "4.5 N", "6 N", "9 N"], a: 1},
+  // POWER & COST
+  {q: "A 100 W bulb runs for 10 hours. How much energy does it consume?", o: ["0.1 kWh", "1 kWh", "10 kWh", "100 kWh"], a: 1},
+  {q: "How much does it cost to run a 1000 W appliance for 2 hours at ₱13.50/kWh?", o: ["₱13.50", "₱27.00", "₱54.00", "₱2.70"], a: 1},
+  {q: "An electric fan rated at 50 W runs for 5 hours each day. What is the daily cost at ₱13.50/kWh?", o: ["₱0.34", "₱1.35", "₱3.38", "₱33.75"], a: 2},
+  {q: "A 2000 W electric heater is used for 30 minutes. What is the cost at ₱13.50/kWh?", o: ["₱6.75", "₱13.50", "₱27.00", "₱40.50"], a: 1}
+];
+
+const seesawSituations = [
+  {mass: 20, length: 60, fixVar: "mass",   fixedValue: 40, desc: "A 20 kg child sits 60 cm from the pivot on the LEFT side. YOUR mass is FIXED at 40 kg — adjust only the LENGTH on your side to balance the see-saw."},
+  {mass: 15, length: 80, fixVar: "length", fixedValue: 30, desc: "A 15 kg weight is 80 cm from the fulcrum on the LEFT side. YOUR length is FIXED at 30 cm — adjust only the MASS on your side to balance the see-saw."},
+  {mass: 25, length: 40, fixVar: "mass",   fixedValue: 20, desc: "A 25 kg crate sits 40 cm from the pivot on the LEFT. YOUR mass is FIXED at 20 kg — adjust only the LENGTH on your side to balance the see-saw."},
+  {mass: 10, length: 90, fixVar: "length", fixedValue: 30, desc: "A 10 kg bag hangs 90 cm from the pivot on the LEFT. YOUR length is FIXED at 30 cm — adjust only the MASS on your side to balance the see-saw."},
+  {mass: 30, length: 50, fixVar: "mass",   fixedValue: 25, desc: "A 30 kg block is 50 cm from the fulcrum on the LEFT. YOUR mass is FIXED at 25 kg — adjust only the LENGTH on your side to balance the see-saw."}
+];
+
+// ============ STATE ============
+
+let student = {last: "", first: ""};
+let currentSection = "";
+let currentIndex = 0;
+let timerInterval = null;
+let timeLeft = 0;
+let answers = {und: [], ps: [], ss: []};
+let currentSeesawStart = 0;
+let currentSeesawSolved = false;
+
+// Tab switch detection state
+let examInProgress = false;
+let tabSwitchCount = 0;
+let lastSwitchTime = 0;
+const MAX_TAB_SWITCHES = 2;
+
+// ============ FLOW ============
+
+function startExam() {
+  const last = document.getElementById("lastName").value.trim();
+  const first = document.getElementById("firstName").value.trim();
+  if (!last || !first) { alert("Please enter both last and first name."); return; }
+  student.last = last;
+  student.first = first;
+  localStorage.setItem("examStudentName", last + ", " + first);
+  // Load any previously-saved switch count for this attempt, and begin tracking
+  tabSwitchCount = parseInt(localStorage.getItem("examTabSwitches") || "0");
+  examInProgress = true;
+  document.getElementById("nameScreen").hidden = true;
+  showInstructions("understanding");
+}
+
+function showInstructions(section) {
+  currentSection = section;
+  const scr = document.getElementById("instructionsScreen");
+  const title = document.getElementById("instTitle");
+  const body = document.getElementById("instBody");
+  if (section === "understanding") {
+    title.textContent = "Section 1: Understanding";
+    body.innerHTML = "<p>10 multiple-choice items. 30 seconds each. If the timer runs out, the item is skipped (0 points).</p><p>Click 'Start Section' when ready.</p>";
+  } else if (section === "ps") {
+    title.textContent = "Section 2: Problem Solving";
+    body.innerHTML = "<p>12 multiple-choice items covering Torque, Equilibrium, and Power & Cost of Energy (₱13.50/kWh).</p><p>3 minutes per item. If the timer runs out, the item is skipped.</p><p>Click 'Start Section' when ready.</p>";
+  } else if (section === "ss") {
+    title.textContent = "Section 3: See-Saw Challenge";
+    body.innerHTML = "<p>5 situations. Each shows a fixed mass at a fixed distance on the LEFT side of a see-saw.</p><p><b>IMPORTANT:</b> On YOUR side, ONE variable will be LOCKED (either mass or length). You must compute and enter the OTHER variable (integer only) to balance the see-saw (net torque = 0).</p><p>You have 2 minutes per situation. Points earned = 10 × (1 − timeUsed/120), rounded. Faster = more points. Timeout = 0 points.</p><p>Click 'Start Section' when ready.</p>";
+  }
+  scr.hidden = false;
+}
+
+function beginSection() {
+  document.getElementById("instructionsScreen").hidden = true;
+  if (currentSection === "understanding" || currentSection === "ps") {
+    currentIndex = 0;
+    showQuestion();
+  } else if (currentSection === "ss") {
+    currentIndex = 0;
+    showSeesaw();
+  }
+}
+
+// ============ QUESTION LOGIC ============
+
+function showQuestion() {
+  const isUnd = currentSection === "understanding";
+  const pool = isUnd ? understandingQuestions : problemSolvingQuestions;
+  const total = pool.length;
+  if (currentIndex >= total) {
+    if (isUnd) { showInstructions("ps"); } else { showInstructions("ss"); }
+    return;
+  }
+  document.getElementById("questionScreen").hidden = false;
+  document.getElementById("sectionLabel").textContent = isUnd ? "Understanding" : "Problem Solving";
+  document.getElementById("qNum").textContent = (currentIndex + 1).toString();
+  document.getElementById("qTotal").textContent = total.toString();
+  const item = pool[currentIndex];
+  document.getElementById("qText").innerHTML = "<b>" + item.q + "</b>";
+  const optsDiv = document.getElementById("qOptions");
+  optsDiv.innerHTML = "";
+  const letters = ["A", "B", "C", "D"];
+  for (let i = 0; i < item.o.length; i++) {
+    const id = "opt_" + i;
+    const p = document.createElement("p");
+    p.innerHTML = '<label><input type="radio" name="choice" value="' + i + '" id="' + id + '"> ' + letters[i] + '. ' + item.o[i] + '</label>';
+    optsDiv.appendChild(p);
+  }
+  timeLeft = isUnd ? 30 : 180;
+  updateTimerDisplay();
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(tickQuestionTimer, 1000);
+}
+
+function updateTimerDisplay() {
+  document.getElementById("timer").textContent = timeLeft.toString();
+}
+
+function tickQuestionTimer() {
+  timeLeft--;
+  updateTimerDisplay();
+  if (timeLeft <= 0) {
+    clearInterval(timerInterval);
+    recordAnswer(null);
+    currentIndex++;
+    document.getElementById("questionScreen").hidden = true;
+    showQuestion();
+  }
+}
+
+function submitAnswer() {
+  const radios = document.getElementsByName("choice");
+  let chosen = null;
+  for (const r of radios) { if (r.checked) { chosen = parseInt(r.value); break; } }
+  if (chosen === null) { alert("Please select an answer or click Skip."); return; }
+  clearInterval(timerInterval);
+  recordAnswer(chosen);
+  currentIndex++;
+  document.getElementById("questionScreen").hidden = true;
+  showQuestion();
+}
+
+function skipQuestion() {
+  clearInterval(timerInterval);
+  recordAnswer(null);
+  currentIndex++;
+  document.getElementById("questionScreen").hidden = true;
+  showQuestion();
+}
+
+function recordAnswer(chosen) {
+  const isUnd = currentSection === "understanding";
+  const pool = isUnd ? understandingQuestions : problemSolvingQuestions;
+  const correct = pool[currentIndex].a;
+  const ok = (chosen !== null && chosen === correct);
+  const entry = {chosen: chosen, correct: correct, ok: ok};
+  if (isUnd) answers.und.push(entry); else answers.ps.push(entry);
+}
+
+// ============ SEE-SAW LOGIC ============
+
+function showSeesaw() {
+  if (currentIndex >= seesawSituations.length) {
+    finishExam();
+    return;
+  }
+  document.getElementById("seesawScreen").hidden = false;
+  currentSeesawSolved = false;
+  const fb = document.getElementById("sFeedback");
+  fb.textContent = "";
+  fb.className = "";
+  document.getElementById("sNum").textContent = (currentIndex + 1).toString();
+  document.getElementById("sPoints").textContent = "10";
+  const sit = seesawSituations[currentIndex];
+  document.getElementById("sText").innerHTML = "<b>" + sit.desc + "</b>";
+
+  const massInput   = document.getElementById("sMass");
+  const lengthInput = document.getElementById("sLength");
+  const massTag     = document.getElementById("sMassTag");
+  const lengthTag   = document.getElementById("sLengthTag");
+
+  // Reset editability
+  massInput.disabled   = false;
+  lengthInput.disabled = false;
+  massTag.innerHTML    = "";
+  lengthTag.innerHTML  = "";
+
+  if (sit.fixVar === "mass") {
+    // Mass is locked, student adjusts length
+    massInput.value = sit.fixedValue;
+    massInput.disabled = true;
+    massTag.innerHTML = '<span class="locked-tag">LOCKED</span>';
+    lengthInput.value = 10;
+    lengthTag.innerHTML = '<span class="solve-tag">SOLVE THIS</span>';
+    setTimeout(function() { lengthInput.focus(); lengthInput.select(); }, 50);
+  } else {
+    // Length is locked, student adjusts mass
+    lengthInput.value = sit.fixedValue;
+    lengthInput.disabled = true;
+    lengthTag.innerHTML = '<span class="locked-tag">LOCKED</span>';
+    massInput.value = 10;
+    massTag.innerHTML = '<span class="solve-tag">SOLVE THIS</span>';
+    setTimeout(function() { massInput.focus(); massInput.select(); }, 50);
+  }
+
+  timeLeft = 120;
+  currentSeesawStart = Date.now();
+  document.getElementById("sTimer").textContent = timeLeft.toString();
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(tickSeesawTimer, 1000);
+  updateSeesaw();
+}
+
+function tickSeesawTimer() {
+  timeLeft--;
+  document.getElementById("sTimer").textContent = timeLeft.toString();
+  if (timeLeft <= 0) {
+    clearInterval(timerInterval);
+    if (!currentSeesawSolved) {
+      answers.ss.push({solved: false, time: 120, points: 0, mass: null, length: null});
+      const fb = document.getElementById("sFeedback");
+      fb.innerHTML = "<b>Time's up! 0 points for this situation.</b>";
+      fb.className = "bad";
+      setTimeout(nextSeesaw, 1500);
+    }
+  }
+}
+
+function updateSeesaw() {
+  const sit = seesawSituations[currentIndex];
+  const m = parseInt(document.getElementById("sMass").value) || 0;
+  const L = parseInt(document.getElementById("sLength").value) || 0;
+  const leftT = sit.mass * sit.length;
+  const rightT = m * L;
+  document.getElementById("leftT").textContent = leftT.toString();
+  document.getElementById("rightT").textContent = rightT.toString();
+  document.getElementById("diffT").textContent = (rightT - leftT).toString();
+  drawSeesawSvg(sit.mass, sit.length, m, L);
+}
+
+function drawSeesawSvg(fM, fL, yM, yL) {
+  const leftT = fM * fL;
+  const rightT = yM * yL;
+  const diff = rightT - leftT;
+  // Positive tilt (rad > 0) => left end goes DOWN in SVG (y increases down).
+  // If right is heavier (diff > 0), right should go down => tilt should be NEGATIVE.
+  let tilt = Math.max(-15, Math.min(15, -diff / 150));
+  if (leftT === rightT && leftT > 0) tilt = 0;
+  const cx = 350, cy = 180;
+  const beamLen = 260;
+  const rad = tilt * Math.PI / 180;
+  const lx = cx - beamLen * Math.cos(rad);
+  const ly = cy + beamLen * Math.sin(rad);
+  const rx = cx + beamLen * Math.cos(rad);
+  const ry = cy - beamLen * Math.sin(rad);
+  const fPos = fL / 100;
+  const yPos = yL / 100;
+  const fx = cx - beamLen * fPos * Math.cos(rad);
+  const fy = cy + beamLen * fPos * Math.sin(rad);
+  const yx = cx + beamLen * yPos * Math.cos(rad);
+  const yy = cy - beamLen * yPos * Math.sin(rad);
+  const fBoxSize = 22 + Math.min(38, fM);
+  const yBoxSize = 22 + Math.min(38, yM);
+
+  let svg = '<svg width="700" height="280" viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg">';
+
+  // Tick marks along baseline (every 20 cm each side, for reference)
+  for (let i = 1; i <= 5; i++) {
+    const xL = cx - (beamLen * i / 5);
+    const xR = cx + (beamLen * i / 5);
+    svg += '<line x1="' + xL + '" y1="258" x2="' + xL + '" y2="264" stroke="#666" stroke-width="1"/>';
+    svg += '<line x1="' + xR + '" y1="258" x2="' + xR + '" y2="264" stroke="#666" stroke-width="1"/>';
+    svg += '<text x="' + xL + '" y="276" text-anchor="middle" font-size="10" fill="#555">' + (i*20) + '</text>';
+    svg += '<text x="' + xR + '" y="276" text-anchor="middle" font-size="10" fill="#555">' + (i*20) + '</text>';
+  }
+  svg += '<text x="' + cx + '" y="276" text-anchor="middle" font-size="10" fill="#555">0</text>';
+
+  // Fulcrum (gradient-shaded triangle with base)
+  const fulcrumGrad = '<defs><linearGradient id="fulc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#555"/><stop offset="1" stop-color="#1a1a1a"/></linearGradient>' +
+                      '<linearGradient id="beamG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b6f47"/><stop offset="0.5" stop-color="#a0825a"/><stop offset="1" stop-color="#6b5434"/></linearGradient>' +
+                      '<linearGradient id="fixedBox" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#888"/><stop offset="1" stop-color="#444"/></linearGradient>' +
+                      '<linearGradient id="yourBox" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe066"/><stop offset="1" stop-color="#e0a800"/></linearGradient></defs>';
+  svg += fulcrumGrad;
+  svg += '<polygon points="' + (cx-35) + ',255 ' + (cx+35) + ',255 ' + cx + ',175" fill="url(#fulc)" stroke="black" stroke-width="1.5"/>';
+  svg += '<ellipse cx="' + cx + '" cy="255" rx="38" ry="4" fill="#333"/>';
+
+  // Beam — drawn as a thick rotated rectangle for wood look
+  const beamThickness = 10;
+  // Compute 4 corners of the beam rectangle
+  const perpX = Math.sin(rad) * beamThickness / 2;
+  const perpY = Math.cos(rad) * beamThickness / 2;
+  const p1x = lx - perpX, p1y = ly - perpY;
+  const p2x = rx - perpX, p2y = ry - perpY;
+  const p3x = rx + perpX, p3y = ry + perpY;
+  const p4x = lx + perpX, p4y = ly + perpY;
+  svg += '<polygon points="' + p1x + ',' + p1y + ' ' + p2x + ',' + p2y + ' ' + p3x + ',' + p3y + ' ' + p4x + ',' + p4y + '" fill="url(#beamG)" stroke="black" stroke-width="1.5"/>';
+
+  // Center pivot dot on beam
+  svg += '<circle cx="' + cx + '" cy="' + cy + '" r="4" fill="#222" stroke="black"/>';
+
+  // Fixed weight block (gray gradient crate)
+  const fBoxX = fx - fBoxSize/2;
+  const fBoxY = fy - fBoxSize;
+  svg += '<rect x="' + fBoxX + '" y="' + fBoxY + '" width="' + fBoxSize + '" height="' + fBoxSize + '" fill="url(#fixedBox)" stroke="black" stroke-width="2" rx="3"/>';
+  // Crate cross-lines
+  svg += '<line x1="' + fBoxX + '" y1="' + (fBoxY + fBoxSize/2) + '" x2="' + (fBoxX + fBoxSize) + '" y2="' + (fBoxY + fBoxSize/2) + '" stroke="black" stroke-width="1" opacity="0.5"/>';
+  svg += '<line x1="' + (fBoxX + fBoxSize/2) + '" y1="' + fBoxY + '" x2="' + (fBoxX + fBoxSize/2) + '" y2="' + (fBoxY + fBoxSize) + '" stroke="black" stroke-width="1" opacity="0.5"/>';
+  svg += '<text x="' + fx + '" y="' + (fy - fBoxSize/2 + 4) + '" text-anchor="middle" font-size="12" font-weight="bold" fill="white">' + fM + '</text>';
+  svg += '<text x="' + fx + '" y="' + (fBoxY - 6) + '" text-anchor="middle" font-size="12" font-weight="bold" fill="black">' + fM + ' kg @ ' + fL + ' cm</text>';
+
+  // Your weight block (yellow gradient crate)
+  const yBoxX = yx - yBoxSize/2;
+  const yBoxY = yy - yBoxSize;
+  svg += '<rect x="' + yBoxX + '" y="' + yBoxY + '" width="' + yBoxSize + '" height="' + yBoxSize + '" fill="url(#yourBox)" stroke="black" stroke-width="2" rx="3"/>';
+  svg += '<line x1="' + yBoxX + '" y1="' + (yBoxY + yBoxSize/2) + '" x2="' + (yBoxX + yBoxSize) + '" y2="' + (yBoxY + yBoxSize/2) + '" stroke="black" stroke-width="1" opacity="0.5"/>';
+  svg += '<line x1="' + (yBoxX + yBoxSize/2) + '" y1="' + yBoxY + '" x2="' + (yBoxX + yBoxSize/2) + '" y2="' + (yBoxY + yBoxSize) + '" stroke="black" stroke-width="1" opacity="0.5"/>';
+  svg += '<text x="' + yx + '" y="' + (yy - yBoxSize/2 + 4) + '" text-anchor="middle" font-size="12" font-weight="bold" fill="black">' + yM + '</text>';
+  svg += '<text x="' + yx + '" y="' + (yBoxY - 6) + '" text-anchor="middle" font-size="12" font-weight="bold" fill="black">' + yM + ' kg @ ' + yL + ' cm</text>';
+
+  // Side labels
+  svg += '<text x="20" y="25" font-size="13" font-weight="bold" fill="#333">FIXED SIDE</text>';
+  svg += '<text x="680" y="25" text-anchor="end" font-size="13" font-weight="bold" fill="#333">YOUR SIDE</text>';
+
+  // Balance indicator
+  if (leftT === rightT && leftT > 0) {
+    svg += '<rect x="275" y="38" width="150" height="28" fill="#2a7a2a" rx="4"/>';
+    svg += '<text x="' + cx + '" y="58" text-anchor="middle" font-size="16" font-weight="bold" fill="white">⚖ BALANCED ⚖</text>';
+  } else if (leftT > 0 && rightT > 0) {
+    const ratio = Math.abs(diff) / Math.max(leftT, rightT);
+    if (ratio < 0.1) {
+      svg += '<text x="' + cx + '" y="55" text-anchor="middle" font-size="12" fill="#a07a20">Close! Keep adjusting...</text>';
+    }
+  }
+
+  svg += '</svg>';
+  document.getElementById("seesawSvg").innerHTML = svg;
+}
+
+function checkSeesaw() {
+  if (currentSeesawSolved) return;
+  const sit = seesawSituations[currentIndex];
+  const m = parseInt(document.getElementById("sMass").value) || 0;
+  const L = parseInt(document.getElementById("sLength").value) || 0;
+  const fb = document.getElementById("sFeedback");
+  if (m <= 0 || L <= 0) {
+    fb.textContent = "Mass and length must be positive integers.";
+    fb.className = "warn";
+    return;
+  }
+  const leftT = sit.mass * sit.length;
+  const rightT = m * L;
+  if (leftT === rightT) {
+    currentSeesawSolved = true;
+    clearInterval(timerInterval);
+    const used = Math.round((Date.now() - currentSeesawStart) / 1000);
+    const points = Math.max(0, Math.round(10 * (120 - used) / 120));
+    answers.ss.push({solved: true, time: used, points: points, mass: m, length: L});
+    fb.innerHTML = "<b>✓ BALANCED! Solved in " + used + " seconds. Points: " + points + "/10</b>";
+    fb.className = "ok";
+    setTimeout(nextSeesaw, 1800);
+  } else {
+    const diff = rightT - leftT;
+    let hint = diff > 0 ? "Your side is heavier. Reduce mass or length." : "Your side is lighter. Increase mass or length.";
+    fb.textContent = "Not balanced. " + hint + " (Try again)";
+    fb.className = "bad";
+  }
+}
+
+function nextSeesaw() {
+  currentIndex++;
+  document.getElementById("seesawScreen").hidden = true;
+  showSeesaw();
+}
+
+// ============ RESULTS ============
+
+function finishExam() {
+  document.getElementById("seesawScreen").hidden = true;
+  let undScore = answers.und.filter(x => x.ok).length;
+  let psScore = answers.ps.filter(x => x.ok).length;
+  let ssScore = answers.ss.reduce((s, x) => s + x.points, 0);
+  const total = undScore + psScore + ssScore;
+  const pct = (total / 72 * 100).toFixed(1);
+  document.getElementById("rName").innerHTML = "<b>Student:</b> " + student.last + ", " + student.first;
+  document.getElementById("rDate").innerHTML = "<b>Date:</b> " + new Date().toLocaleString();
+  document.getElementById("rUnd").textContent = undScore.toString();
+  document.getElementById("rPS").textContent = psScore.toString();
+  document.getElementById("rSS").textContent = ssScore.toString();
+  document.getElementById("rTotal").textContent = total.toString();
+  document.getElementById("rPct").textContent = pct;
+  let breakdown = "<b>See-Saw Breakdown:</b><br>";
+  for (let i = 0; i < answers.ss.length; i++) {
+    const r = answers.ss[i];
+    if (r.solved) {
+      breakdown += "Situation " + (i+1) + ": balanced in " + r.time + "s with " + r.mass + " kg × " + r.length + " cm → " + r.points + " pts<br>";
+    } else {
+      breakdown += "Situation " + (i+1) + ": not solved (timeout) → 0 pts<br>";
+    }
+  }
+  document.getElementById("rBreakdown").innerHTML = breakdown;
+  const record = {
+    name: student.last + ", " + student.first,
+    date: new Date().toISOString(),
+    understanding: undScore,
+    problemSolving: psScore,
+    seesaw: ssScore,
+    total: total,
+    percent: pct
+  };
+  localStorage.setItem("examLastResult", JSON.stringify(record));
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem("examHistory") || "[]"); } catch(e) { history = []; }
+  history.push(record);
+  localStorage.setItem("examHistory", JSON.stringify(history));
+  // Lock out further attempts on this browser
+  localStorage.setItem("examCompleted", "true");
+  // Stop tab-switch tracking now that the exam is complete
+  examInProgress = false;
+  localStorage.removeItem("examTabSwitches");
+  document.getElementById("resultsScreen").hidden = false;
+}
+
+function takeScreenshot() {
+  const card = document.getElementById("resultsCard") || document.getElementById("lockedResults");
+  html2canvas(card, {backgroundColor: "#ffffff"}).then(function(canvas) {
+    const link = document.createElement("a");
+    const nameSource = student.last + "_" + student.first;
+    const safeName = nameSource.replace(/[^a-zA-Z0-9_]/g, "") || "exam";
+    link.download = "exam_results_" + safeName + ".png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }).catch(function(err) {
+    alert("Screenshot failed: " + err + ". You can manually screenshot the results.");
+  });
+}
+
+// ============ TAB / WINDOW SWITCH DETECTION ============
+
+function handleTabSwitch() {
+  if (!examInProgress) return;
+  // Debounce: ignore events within 800ms of the last one (prevents double-counting
+  // when both visibilitychange and blur fire for the same user action)
+  const now = Date.now();
+  if (now - lastSwitchTime < 800) return;
+  lastSwitchTime = now;
+
+  tabSwitchCount++;
+  localStorage.setItem("examTabSwitches", tabSwitchCount.toString());
+
+  if (tabSwitchCount >= MAX_TAB_SWITCHES) {
+    lockoutForTabSwitches();
+    return;
+  }
+  // Silent — no warning shown to the student so the lockout comes as a surprise.
+}
+
+function lockoutForTabSwitches() {
+  examInProgress = false;
+  if (timerInterval) clearInterval(timerInterval);
+
+  // Build and save a terminated-exam record so the state persists on refresh
+  const record = {
+    name: (student.last || "") + ", " + (student.first || ""),
+    date: new Date().toISOString(),
+    understanding: answers.und.filter(function(x){return x.ok;}).length,
+    problemSolving: answers.ps.filter(function(x){return x.ok;}).length,
+    seesaw: answers.ss.reduce(function(s,x){return s + (x.points||0);}, 0),
+    total: 0,
+    percent: "0.0",
+    terminated: true,
+    reason: "tab_switch"
+  };
+  try { localStorage.setItem("examLastResult", JSON.stringify(record)); } catch(e) {}
+  localStorage.setItem("examCompleted", "true");
+  localStorage.setItem("examTerminatedBySwitch", "true");
+
+  // Hide every other screen
+  const ids = ["nameScreen", "lockedScreen", "instructionsScreen", "questionScreen", "seesawScreen", "resultsScreen"];
+  for (let i = 0; i < ids.length; i++) {
+    const el = document.getElementById(ids[i]);
+    if (el) el.hidden = true;
+  }
+  // Show the termination screen
+  document.getElementById("tabSwitchLockName").innerHTML =
+    "<b>Student:</b> " + (record.name.replace(/^,\s*|\s*,\s*$/g,"") || "(unknown)");
+  document.getElementById("tabSwitchLockDate").textContent = new Date().toLocaleString();
+  document.getElementById("tabSwitchLockScreen").hidden = false;
+}
+
+// Listen for tab / window switches
+document.addEventListener("visibilitychange", function() {
+  if (document.hidden) handleTabSwitch();
+});
+window.addEventListener("blur", function() {
+  // Only count blur if the document is also hidden — this avoids false positives
+  // from things like the native alert() dialog stealing focus.
+  if (document.hidden) handleTabSwitch();
+});
+
+// ============ LOCKOUT CHECK ON PAGE LOAD ============
+
+function checkLockout() {
+  // Case 1: exam was terminated due to tab switches
+  if (localStorage.getItem("examTerminatedBySwitch") === "true") {
+    document.getElementById("nameScreen").hidden = true;
+    let record = null;
+    try { record = JSON.parse(localStorage.getItem("examLastResult") || "null"); } catch(e) { record = null; }
+    const name = record && record.name ? record.name.replace(/^,\s*|\s*,\s*$/g,"") : "(unknown)";
+    const date = record && record.date ? new Date(record.date).toLocaleString() : "(unknown)";
+    document.getElementById("tabSwitchLockName").innerHTML = "<b>Student:</b> " + name;
+    document.getElementById("tabSwitchLockDate").textContent = date;
+    document.getElementById("tabSwitchLockScreen").hidden = false;
+    return;
+  }
+  // Case 2: exam was completed normally
+  if (localStorage.getItem("examCompleted") === "true") {
+    document.getElementById("nameScreen").hidden = true;
+    const lockedDiv = document.getElementById("lockedResults");
+    let record = null;
+    try { record = JSON.parse(localStorage.getItem("examLastResult") || "null"); } catch(e) { record = null; }
+    if (record) {
+      // Populate student object so takeScreenshot uses a proper filename
+      const parts = (record.name || "").split(",");
+      student.last = (parts[0] || "").trim();
+      student.first = (parts[1] || "").trim();
+      lockedDiv.innerHTML =
+        "<div id='resultsCard'>" +
+        "<h2>Your Recorded Result</h2>" +
+        "<p><b>Student:</b> " + record.name + "</p>" +
+        "<p><b>Date taken:</b> " + new Date(record.date).toLocaleString() + "</p>" +
+        "<hr>" +
+        "<p><b>Understanding:</b> " + record.understanding + " / 10</p>" +
+        "<p><b>Problem Solving:</b> " + record.problemSolving + " / 12</p>" +
+        "<p><b>See-Saw Challenge:</b> " + record.seesaw + " / 50</p>" +
+        "<hr>" +
+        "<p><b>Total Score:</b> " + record.total + " / 72</p>" +
+        "<p><b>Percentage:</b> " + record.percent + "%</p>" +
+        "</div>";
+    } else {
+      lockedDiv.innerHTML = "<p>A completed attempt is recorded on this browser, but the result details could not be retrieved.</p>";
+    }
+    document.getElementById("lockedScreen").hidden = false;
+  }
+}
+
+// Run check as soon as the DOM is ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", checkLockout);
+} else {
+  checkLockout();
+}
+</script>
+
+</body>
+</html>
